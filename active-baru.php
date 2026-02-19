@@ -176,3 +176,4 @@ if (isset($_GET['x'])) {
 
 echo "<p><a href='?logout=1'>Log out</a></p>";
 ?>
+
